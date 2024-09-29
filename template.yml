@@ -1,0 +1,55 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: 'AWS::Serverless-2016-10-31'
+
+Resources:
+
+  MyApi:
+    Type: AWS::Serverless::Api
+    Properties:
+      StageName: dev
+      Auth:
+        DefaultAuthorizer: MyLambdaTokenAuthorizer
+        Authorizers: 
+          MyLambdaTokenAuthorizer:
+            FunctionArn: !GetAtt MyAuthFunction.Arn
+            
+  HelloFunction:
+    Type: 'AWS::Serverless::Function'
+    Properties:
+      Handler: handler.hello
+      Runtime: nodejs18.x
+      CodeUri: ./hello
+      Events:
+        Hello:
+          Type: Api
+          Properties:
+            Path: /hello
+            Method: GET
+        ProtectedHello:
+          Type: Api
+          Properties:
+            RestApiId: !Ref MyApi
+            Path: /protected-hello
+            Method: GET
+            Auth:
+              Authorizer: MyLambdaTokenAuthorizer  
+
+  MyAuthFunction:
+    Type: 'AWS::Serverless::Function'
+    Properties:
+      CodeUri: ./hello
+      Handler: auth.authorizer
+      Runtime: nodejs18.x
+
+Outputs:
+  Region:
+    Description: "Region"
+    Value: !Ref AWS::Region
+
+  ApiId:
+    Description: "API ID"
+    Value: !Ref MyApi
+
+  ApiUrl:
+    Description: "API endpoint URL for Prod environment"
+    Value: !Sub 'https://${MyApi}.execute-api.${AWS::Region}.amazonaws.com/dev/'
