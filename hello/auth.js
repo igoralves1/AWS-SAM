@@ -1,6 +1,9 @@
 exports.authorizer = async function (event) {
+    console.log("Fn authorizer")
     const token = event.authorizationToken.toLowerCase();
+    console.log("token = ", token)
     const methodArn = event.methodArn;
+    console.log("methodArn = ", methodArn)
 
     switch (token) {
         case 'allow':
@@ -11,7 +14,9 @@ exports.authorizer = async function (event) {
 }
 
 function generateAuthResponse(principalId, effect, methodArn) {
+    console.log("Fn generateAuthResponse")
     const policyDocument = generatePolicyDocument(effect, methodArn);
+    console.log("policyDocument = ", policyDocument)
 
     return {
         principalId,
@@ -20,6 +25,7 @@ function generateAuthResponse(principalId, effect, methodArn) {
 }
 
 function generatePolicyDocument(effect, methodArn) {
+    console.log("Fn generatePolicyDocument")
     if (!effect || !methodArn) return null
 
     const policyDocument = {
