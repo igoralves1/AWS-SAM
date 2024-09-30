@@ -1,7 +1,7 @@
 exports.hello = async (event) => {
     let response;
     try {
-        console.log("handler Hello = ", token)
+        console.log("fn handler Hello")
         console.log("handler Hello event = ", event)
         const path = event.path;
         let message = "Hello World!";
